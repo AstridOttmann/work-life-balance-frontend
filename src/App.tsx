@@ -15,8 +15,8 @@ export default function App() {
     <ToastProvider>
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+        <Toolbar sx={{ justifyContent: 'center' }}>
+          <Typography variant="h6">
             Work-Life Balance
           </Typography>
         </Toolbar>
@@ -25,6 +25,7 @@ export default function App() {
           onChange={(_, v) => setTab(v)}
           textColor="inherit"
           indicatorColor="primary"
+          centered
           sx={{ bgcolor: 'primary.dark' }}
         >
           <Tab label="Daily Log" />
