@@ -61,7 +61,7 @@ export default function AppointmentList({ dailyEntryId, appointments, onChange }
               <ListItem
                 disablePadding
                 secondaryAction={
-                  <Box>
+                  <Box display="flex" gap={0.5}>
                     <IconButton size="small" onClick={() => setEditTarget(a)}>
                       <EditIcon fontSize="small" />
                     </IconButton>

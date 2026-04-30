@@ -45,7 +45,7 @@ export default function EntryList({ entries, onEdit, onDelete }: Props) {
                 {e.date}
               </Typography>
             </Box>
-            <Box>
+            <Box display="flex" gap={0.5}>
               <Tooltip title="Edit">
                 <IconButton size="small" onClick={() => onEdit(e)}>
                   <EditIcon fontSize="small" />
@@ -60,7 +60,7 @@ export default function EntryList({ entries, onEdit, onDelete }: Props) {
           </Box>
 
           {/* Stats chips */}
-          <Box display="flex" flexWrap="wrap" gap={1}>
+          <Box display="flex" flexWrap="wrap" gap={1.5}>
             <Chip
               label={`Work ${e.workHours ?? '-'}h`}
               size="small"
