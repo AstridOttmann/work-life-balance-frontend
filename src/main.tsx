@@ -7,17 +7,17 @@ import App from './App';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1e3a8a',
-      dark: '#162d6e',
+      main: '#D97757',
+      dark: '#B85F3E',
       contrastText: '#ffffff',
     },
     background: {
-      default: '#e8f3fc',
+      default: '#FAF9F7',
       paper: '#ffffff',
     },
     text: {
-      primary: '#0f172a',
-      secondary: '#475569',
+      primary: '#1A1A1A',
+      secondary: '#6B6B6B',
     },
   },
   shape: {
