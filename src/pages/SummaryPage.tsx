@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
-  Alert, Box, Button, ButtonGroup, CircularProgress,
+  Alert, Box, Button, CircularProgress,
   Divider, Paper, Typography,
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -46,34 +46,34 @@ export default function SummaryPage() {
 
   return (
     <Box>
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} flexWrap="wrap" gap={1}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}>
         <Typography variant="h5">Summary</Typography>
-        <ButtonGroup size="small">
-          <Button variant={period === 'weekly' ? 'contained' : 'outlined'} onClick={() => setPeriod('weekly')}>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button size="small" variant={period === 'weekly' ? 'contained' : 'outlined'} onClick={() => setPeriod('weekly')}>
             Weekly
           </Button>
-          <Button variant={period === 'monthly' ? 'contained' : 'outlined'} onClick={() => setPeriod('monthly')}>
+          <Button size="small" variant={period === 'monthly' ? 'contained' : 'outlined'} onClick={() => setPeriod('monthly')}>
             Monthly
           </Button>
-        </ButtonGroup>
+        </Box>
       </Box>
 
-      <Box display="flex" alignItems="center" gap={1} mb={3}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
         <Button variant="outlined" size="small" onClick={() => navigate(-1)} startIcon={<ChevronLeftIcon />}>
           Prev
         </Button>
-        <Typography variant="body1" flexGrow={1} textAlign="center">{periodLabel}</Typography>
+        <Typography variant="body1" sx={{ flexGrow: 1, textAlign: 'center' }}>{periodLabel}</Typography>
         <Button variant="outlined" size="small" onClick={() => navigate(1)} endIcon={<ChevronRightIcon />}>
           Next
         </Button>
       </Box>
 
-      {loading && <Box display="flex" justifyContent="center" mt={4}><CircularProgress /></Box>}
+      {loading && <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>}
       {error && <Alert severity="error">{error}</Alert>}
 
       {!loading && summary && (
         <>
-          <Box display="flex" flexWrap="wrap" gap={2} mb={3}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3 }}>
             {[
               { label: 'Work', value: summary.totalWorkHours, unit: 'h', color: '#1976d2' },
               { label: 'Free time', value: summary.totalFreeTimeHours, unit: 'h', color: '#4caf50' },
