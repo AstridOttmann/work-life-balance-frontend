@@ -1,9 +1,10 @@
 import {
-  IconButton, Paper, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Tooltip,
+  Box, Chip, IconButton, Paper, Tooltip, Typography,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import EventIcon from '@mui/icons-material/Event';
 import type { DailyEntry } from '../types/entry';
 
 interface Props {
@@ -16,44 +17,101 @@ export default function EntryList({ entries, onEdit, onDelete }: Props) {
   if (entries.length === 0) return null;
 
   return (
-    <TableContainer component={Paper} variant="outlined">
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Date</TableCell>
-            <TableCell align="right">Work (h)</TableCell>
-            <TableCell align="right">Free (h)</TableCell>
-            <TableCell align="right">Sleep (h)</TableCell>
-            <TableCell align="right">Appt.</TableCell>
-            <TableCell align="right">Mood</TableCell>
-            <TableCell />
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {entries.map(e => (
-            <TableRow key={e.id} hover>
-              <TableCell>{e.date}</TableCell>
-              <TableCell align="right">{e.workHours ?? '-'}</TableCell>
-              <TableCell align="right">{e.freeTimeHours ?? '-'}</TableCell>
-              <TableCell align="right">{e.sleepingHours ?? '-'}</TableCell>
-              <TableCell align="right">{e.appointments.length}</TableCell>
-              <TableCell align="right">{e.mood}/10</TableCell>
-              <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
-                <Tooltip title="Edit">
-                  <IconButton size="small" onClick={() => onEdit(e)}>
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Delete">
-                  <IconButton size="small" onClick={() => onDelete(e.id)}>
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+        gap: 3,
+      }}
+    >
+      {entries.map(e => (
+        <Paper
+          key={e.id}
+          elevation={2}
+          sx={{
+            p: 3,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            transition: 'box-shadow 0.2s',
+            '&:hover': { boxShadow: 6 },
+          }}
+        >
+          {/* Header */}
+          <Box display="flex" alignItems="center" justifyContent="space-between">
+            <Box display="flex" alignItems="center" gap={1}>
+              <CalendarTodayIcon sx={{ fontSize: 18, color: 'primary.main' }} />
+              <Typography variant="subtitle1" fontWeight={700} color="text.primary">
+                {e.date}
+              </Typography>
+            </Box>
+            <Box>
+              <Tooltip title="Edit">
+                <IconButton size="small" onClick={() => onEdit(e)}>
+                  <EditIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Delete">
+                <IconButton size="small" onClick={() => onDelete(e.id)}>
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Box>
+
+          {/* Stats chips */}
+          <Box display="flex" flexWrap="wrap" gap={1}>
+            <Chip
+              label={`Work ${e.workHours ?? '-'}h`}
+              size="small"
+              color="primary"
+              variant="outlined"
+            />
+            <Chip
+              label={`Free ${e.freeTimeHours ?? '-'}h`}
+              size="small"
+              variant="outlined"
+            />
+            <Chip
+              label={`Sleep ${e.sleepingHours ?? '-'}h`}
+              size="small"
+              variant="outlined"
+            />
+            <Chip
+              label={`Mood ${e.mood}/10`}
+              size="small"
+              color={e.mood >= 7 ? 'success' : e.mood >= 4 ? 'warning' : 'error'}
+              variant="filled"
+            />
+          </Box>
+
+          {/* Notes */}
+          {e.notes && (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
+              {e.notes}
+            </Typography>
+          )}
+
+          {/* Appointment count */}
+          <Box display="flex" alignItems="center" gap={0.5} mt="auto">
+            <EventIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+            <Typography variant="caption" color="text.secondary">
+              {e.appointments.length === 0
+                ? 'No appointments'
+                : `${e.appointments.length} appointment${e.appointments.length > 1 ? 's' : ''}`}
+            </Typography>
+          </Box>
+        </Paper>
+      ))}
+    </Box>
   );
 }
