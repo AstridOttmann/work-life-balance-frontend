@@ -10,6 +10,7 @@ import { entriesApi } from '../services/api';
 import EntryForm from '../components/EntryForm';
 import EntryList from '../components/EntryList';
 import AppointmentList from '../components/AppointmentList';
+import { useToast } from '../context/ToastContext';
 
 export default function DashboardPage() {
   const [entries, setEntries] = useState<DailyEntry[]>([]);
@@ -17,6 +18,7 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<DailyEntry | null>(null);
+  const { toast } = useToast();
 
   const load = useCallback(async () => {
     try {
@@ -35,6 +37,7 @@ export default function DashboardPage() {
   const handleCreate = async (data: DailyEntryInput) => {
     await entriesApi.create(data);
     setAddOpen(false);
+    toast.success('Entry created');
     await load();
   };
 
@@ -42,11 +45,13 @@ export default function DashboardPage() {
     if (!editTarget) return;
     await entriesApi.update(editTarget.id, data);
     setEditTarget(null);
+    toast.success('Entry updated');
     await load();
   };
 
   const handleDelete = async (id: number) => {
     await entriesApi.delete(id);
+    toast.success('Entry deleted');
     await load();
   };
 
