@@ -45,7 +45,7 @@ export default function AppointmentList({ dailyEntryId, appointments, onChange }
 
   return (
     <Box>
-      <Box display="flex" justifyContent="flex-end" mb={1}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
         <Button startIcon={<AddIcon />} size="small" onClick={() => setAddOpen(true)}>
           Add
         </Button>
@@ -73,8 +73,9 @@ export default function AppointmentList({ dailyEntryId, appointments, onChange }
               >
                 <ListItemText
                   primary={a.title}
+                  secondaryTypographyProps={{ component: 'div' }}
                   secondary={
-                    <Box display="flex" gap={1} mt={0.5}>
+                    <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
                       {a.time && <Chip label={formatTime(a.time)} size="small" />}
                       {a.durationHours != null && (
                         <Chip label={`${a.durationHours}h`} size="small" variant="outlined" />
@@ -91,7 +92,7 @@ export default function AppointmentList({ dailyEntryId, appointments, onChange }
       <Dialog open={addOpen} onClose={() => setAddOpen(false)} maxWidth="xs" fullWidth>
         <DialogTitle>New Appointment</DialogTitle>
         <DialogContent>
-          <Box pt={1}>
+          <Box sx={{ pt:1 }}>
             <AppointmentForm
               dailyEntryId={dailyEntryId}
               onSave={handleCreate}
@@ -104,7 +105,7 @@ export default function AppointmentList({ dailyEntryId, appointments, onChange }
       <Dialog open={!!editTarget} onClose={() => setEditTarget(null)} maxWidth="xs" fullWidth>
         <DialogTitle>Edit Appointment</DialogTitle>
         <DialogContent>
-          <Box pt={1}>
+          <Box sx={{ pt:1 }}>
             {editTarget && (
               <AppointmentForm
                 dailyEntryId={dailyEntryId}
