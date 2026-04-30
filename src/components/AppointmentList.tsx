@@ -45,8 +45,7 @@ export default function AppointmentList({ dailyEntryId, appointments, onChange }
 
   return (
     <Box>
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
-        <Typography variant="subtitle1" fontWeight="bold">Appointments</Typography>
+      <Box display="flex" justifyContent="flex-end" mb={1}>
         <Button startIcon={<AddIcon />} size="small" onClick={() => setAddOpen(true)}>
           Add
         </Button>
