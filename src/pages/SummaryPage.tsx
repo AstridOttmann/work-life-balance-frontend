@@ -20,11 +20,10 @@ export default function SummaryPage() {
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
     try {
       const data = await entriesApi.getSummary(period, date.format('YYYY-MM-DD'));
       setSummary(data);
+      setError(null);
     } catch {
       setError('Could not load summary.');
     } finally {

@@ -20,10 +20,9 @@ export default function DashboardPage() {
 
   const load = useCallback(async () => {
     try {
-      setLoading(true);
       const data = await entriesApi.getAll();
-      const sorted = [...data].sort((a, b) => b.date.localeCompare(a.date));
-      setEntries(sorted);
+      setEntries([...data].sort((a, b) => b.date.localeCompare(a.date)));
+      setError(null);
     } catch {
       setError('Could not load entries.');
     } finally {
@@ -53,14 +52,14 @@ export default function DashboardPage() {
 
   const entriesWithAppointments = entries.filter(e => e.appointments.length > 0);
 
-  if (loading) return <Box display="flex" justifyContent="center" mt={6}><CircularProgress /></Box>;
+  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}><CircularProgress /></Box>;
   if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
     <Box>
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5" fontWeight={700} color="text.primary">Daily Log</Typography>
+        <Typography variant="h5" sx={{fontWeight: 700 }} color="text.primary">Daily Log</Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => setAddOpen(true)}>
           New Entry
         </Button>
@@ -74,7 +73,7 @@ export default function DashboardPage() {
       />
 
       {entries.length === 0 && (
-        <Typography color="text.secondary" mt={4} textAlign="center">
+        <Typography color="text.secondary" sx={{mt:4, textAlign:"center"}}>
           No entries yet. Add your first day!
         </Typography>
       )}
@@ -82,9 +81,14 @@ export default function DashboardPage() {
       {/* Appointments section */}
       {entries.length > 0 && (
         <Paper elevation={2} sx={{ mt: 4, p: 3 }}>
-          <Box display="flex" alignItems="center" gap={1} mb={2}>
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            mb: 2
+          }}>
             <EventNoteIcon sx={{ color: 'primary.main' }} />
-            <Typography variant="h6" fontWeight={700} color="text.primary">
+            <Typography variant="h6" sx={{fontWeight:700}} color="text.primary">
               Appointments
             </Typography>
           </Box>
@@ -100,8 +104,7 @@ export default function DashboardPage() {
                 <Typography
                   variant="subtitle2"
                   color="primary.main"
-                  fontWeight={600}
-                  mb={1}
+                  sx={{ fontWeight: 600, mb: 1 }}
                 >
                   {entry.date}
                 </Typography>
@@ -120,7 +123,7 @@ export default function DashboardPage() {
       <Dialog open={addOpen} onClose={() => setAddOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>New Day Entry</DialogTitle>
         <DialogContent>
-          <Box pt={1}>
+          <Box sx={{ pt:1 }}>
             <EntryForm onSave={handleCreate} onCancel={() => setAddOpen(false)} />
           </Box>
         </DialogContent>
@@ -129,7 +132,7 @@ export default function DashboardPage() {
       <Dialog open={!!editTarget} onClose={() => setEditTarget(null)} maxWidth="sm" fullWidth>
         <DialogTitle>Edit Entry</DialogTitle>
         <DialogContent>
-          <Box pt={1}>
+          <Box sx={{pt:1}}>
             {editTarget && (
               <EntryForm
                 initial={editTarget}
