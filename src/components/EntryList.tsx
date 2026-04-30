@@ -38,14 +38,14 @@ export default function EntryList({ entries, onEdit, onDelete }: Props) {
           }}
         >
           {/* Header */}
-          <Box display="flex" alignItems="center" justifyContent="space-between">
-            <Box display="flex" alignItems="center" gap={1}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <CalendarTodayIcon sx={{ fontSize: 18, color: 'primary.main' }} />
               <Typography variant="subtitle1" fontWeight={700} color="text.primary">
                 {e.date}
               </Typography>
             </Box>
-            <Box display="flex" gap={0.5}>
+            <Box sx={{ display: 'flex', gap: 1 }}>
               <Tooltip title="Edit">
                 <IconButton size="small" onClick={() => onEdit(e)}>
                   <EditIcon fontSize="small" />
@@ -60,7 +60,7 @@ export default function EntryList({ entries, onEdit, onDelete }: Props) {
           </Box>
 
           {/* Stats chips */}
-          <Box display="flex" flexWrap="wrap" gap={1.5}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
             <Chip
               label={`Work ${e.workHours ?? '-'}h`}
               size="small"
@@ -102,7 +102,7 @@ export default function EntryList({ entries, onEdit, onDelete }: Props) {
           )}
 
           {/* Appointment count */}
-          <Box display="flex" alignItems="center" gap={0.5} mt="auto">
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 'auto' }}>
             <EventIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
             <Typography variant="caption" color="text.secondary">
               {e.appointments.length === 0
