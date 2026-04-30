@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { Appointment, AppointmentInput, DailyEntry, DailyEntryInput, Summary } from '../types/entry';
 
-const api = axios.create({ baseURL: 'http://localhost:8080/api' });
+export const api = axios.create({ baseURL: 'http://localhost:8080/api' });
 
 export const entriesApi = {
   getAll: (from?: string, to?: string) =>
