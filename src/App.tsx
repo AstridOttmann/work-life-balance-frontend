@@ -6,11 +6,13 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import DashboardPage from './pages/DashboardPage';
 import SummaryPage from './pages/SummaryPage';
+import { ToastProvider } from './context/ToastContext';
 
 export default function App() {
   const [tab, setTab] = useState(0);
 
   return (
+    <ToastProvider>
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <AppBar position="static">
         <Toolbar>
@@ -35,5 +37,6 @@ export default function App() {
         <Box hidden={tab !== 1}><SummaryPage /></Box>
       </Container>
     </LocalizationProvider>
+    </ToastProvider>
   );
 }
