@@ -30,6 +30,7 @@ export default function EntryList({ entries, onEdit, onDelete }: Props) {
           elevation={2}
           sx={{
             p: 3,
+            borderRadius: 4,
             display: 'flex',
             flexDirection: 'column',
             gap: 2,
