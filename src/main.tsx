@@ -30,6 +30,10 @@ const theme = createTheme({
           borderRadius: 10,
           textTransform: 'none',
           fontWeight: 600,
+          padding: '8px 24px',
+        },
+        sizeSmall: {
+          padding: '4px 14px',
         },
       },
     },
