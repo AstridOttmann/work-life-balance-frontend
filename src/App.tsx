@@ -22,7 +22,7 @@ export default function App() {
           value={tab}
           onChange={(_, v) => setTab(v)}
           textColor="inherit"
-          indicatorColor="secondary"
+          indicatorColor="primary"
           sx={{ bgcolor: 'primary.dark' }}
         >
           <Tab label="Daily Log" />
