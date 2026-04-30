@@ -30,7 +30,7 @@ export default function App() {
         </Tabs>
       </AppBar>
 
-      <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 6 }}>
         <Box hidden={tab !== 0}><DashboardPage /></Box>
         <Box hidden={tab !== 1}><SummaryPage /></Box>
       </Container>
