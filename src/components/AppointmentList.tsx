@@ -78,7 +78,7 @@ export default function AppointmentList({ dailyEntryId, appointments, onChange }
               >
                 <ListItemText
                   primary={a.title}
-                  secondaryTypographyProps={{ component: 'div' }}
+                  slotProps={{ secondary: { component: 'div' } }}
                   secondary={
                     <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
                       {a.time && <Chip label={formatTime(a.time)} size="small" />}
