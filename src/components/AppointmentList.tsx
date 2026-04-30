@@ -9,6 +9,7 @@ import AddIcon from '@mui/icons-material/Add';
 import type { Appointment, AppointmentInput } from '../types/entry';
 import AppointmentForm from './AppointmentForm';
 import { appointmentsApi } from '../services/api';
+import { useToast } from '../context/ToastContext';
 
 interface Props {
   dailyEntryId: number;
@@ -19,10 +20,12 @@ interface Props {
 export default function AppointmentList({ dailyEntryId, appointments, onChange }: Props) {
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Appointment | null>(null);
+  const { toast } = useToast();
 
   const handleCreate = async (data: AppointmentInput) => {
     await appointmentsApi.create(data);
     setAddOpen(false);
+    toast.success('Appointment created');
     onChange();
   };
 
@@ -30,11 +33,13 @@ export default function AppointmentList({ dailyEntryId, appointments, onChange }
     if (!editTarget) return;
     await appointmentsApi.update(editTarget.id, data);
     setEditTarget(null);
+    toast.success('Appointment updated');
     onChange();
   };
 
   const handleDelete = async (id: number) => {
     await appointmentsApi.delete(id);
+    toast.success('Appointment deleted');
     onChange();
   };
 
