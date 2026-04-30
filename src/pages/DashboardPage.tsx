@@ -4,6 +4,7 @@ import {
   DialogTitle, Divider, Paper, Typography,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import EventNoteIcon from '@mui/icons-material/EventNote';
 import type { DailyEntry, DailyEntryInput } from '../types/entry';
 import { entriesApi } from '../services/api';
 import EntryForm from '../components/EntryForm';
@@ -16,7 +17,6 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<DailyEntry | null>(null);
-  const [detailEntry, setDetailEntry] = useState<DailyEntry | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -48,31 +48,25 @@ export default function DashboardPage() {
 
   const handleDelete = async (id: number) => {
     await entriesApi.delete(id);
-    if (detailEntry?.id === id) setDetailEntry(null);
     await load();
   };
 
-  const openDetail = (entry: DailyEntry) => setDetailEntry(entry);
-
-  const refreshDetail = async () => {
-    if (!detailEntry) return;
-    const updated = await entriesApi.getById(detailEntry.id);
-    setDetailEntry(updated);
-    setEntries(prev => prev.map(e => (e.id === updated.id ? updated : e)));
-  };
+  const entriesWithAppointments = entries.filter(e => e.appointments.length > 0);
 
   if (loading) return <Box display="flex" justifyContent="center" mt={6}><CircularProgress /></Box>;
   if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h5">Daily Log</Typography>
+      {/* Header */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Typography variant="h5" fontWeight={700} color="text.primary">Daily Log</Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => setAddOpen(true)}>
           New Entry
         </Button>
       </Box>
 
+      {/* Entry cards */}
       <EntryList
         entries={entries}
         onEdit={e => setEditTarget(e)}
@@ -85,28 +79,44 @@ export default function DashboardPage() {
         </Typography>
       )}
 
-      {detailEntry && (
-        <Paper variant="outlined" sx={{ mt: 3, p: 2 }}>
-          <Typography variant="h6" mb={1}>Appointments — {detailEntry.date}</Typography>
-          <Divider sx={{ mb: 2 }} />
-          <AppointmentList
-            dailyEntryId={detailEntry.id}
-            appointments={detailEntry.appointments}
-            onChange={refreshDetail}
-          />
+      {/* Appointments section */}
+      {entries.length > 0 && (
+        <Paper elevation={2} sx={{ mt: 4, p: 3 }}>
+          <Box display="flex" alignItems="center" gap={1} mb={2}>
+            <EventNoteIcon sx={{ color: 'primary.main' }} />
+            <Typography variant="h6" fontWeight={700} color="text.primary">
+              Appointments
+            </Typography>
+          </Box>
+
+          {entriesWithAppointments.length === 0 ? (
+            <Typography variant="body2" color="text.secondary">
+              No appointments yet. Add one via an entry.
+            </Typography>
+          ) : (
+            entriesWithAppointments.map((entry, i) => (
+              <Box key={entry.id}>
+                {i > 0 && <Divider sx={{ my: 2 }} />}
+                <Typography
+                  variant="subtitle2"
+                  color="primary.main"
+                  fontWeight={600}
+                  mb={1}
+                >
+                  {entry.date}
+                </Typography>
+                <AppointmentList
+                  dailyEntryId={entry.id}
+                  appointments={entry.appointments}
+                  onChange={load}
+                />
+              </Box>
+            ))
+          )}
         </Paper>
       )}
 
-      {!detailEntry && entries.length > 0 && (
-        <Box mt={2}>
-          {entries.map(e => (
-            <Button key={e.id} size="small" onClick={() => openDetail(e)} sx={{ mr: 1, mb: 1 }}>
-              {e.date} ({e.appointments.length} appts)
-            </Button>
-          ))}
-        </Box>
-      )}
-
+      {/* Dialogs */}
       <Dialog open={addOpen} onClose={() => setAddOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>New Day Entry</DialogTitle>
         <DialogContent>
