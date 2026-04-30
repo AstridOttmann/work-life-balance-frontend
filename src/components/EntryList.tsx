@@ -41,7 +41,7 @@ export default function EntryList({ entries, onEdit, onDelete }: Props) {
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <CalendarTodayIcon sx={{ fontSize: 18, color: 'primary.main' }} />
-              <Typography variant="subtitle1" fontWeight={700} color="text.primary">
+              <Typography variant="subtitle1" sx={{ fontWeight: 700 }} color="text.primary">
                 {e.date}
               </Typography>
             </Box>

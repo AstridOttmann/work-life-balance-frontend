@@ -24,7 +24,7 @@ export default function SummaryCharts({ summary }: Props) {
 
   return (
     <Box>
-      <Typography variant="subtitle1" fontWeight="bold" mb={1}>
+      <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
         Time distribution (hours)
       </Typography>
       <ResponsiveContainer width="100%" height={260}>
@@ -41,7 +41,7 @@ export default function SummaryCharts({ summary }: Props) {
         </BarChart>
       </ResponsiveContainer>
 
-      <Typography variant="subtitle1" fontWeight="bold" mt={3} mb={1}>
+      <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 3, mb: 1 }}>
         Mood trend
       </Typography>
       <ResponsiveContainer width="100%" height={180}>

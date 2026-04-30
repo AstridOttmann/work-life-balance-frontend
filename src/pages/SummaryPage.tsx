@@ -81,7 +81,7 @@ export default function SummaryPage() {
               { label: 'Avg Mood', value: summary.avgMood.toFixed(1), unit: '/10', color: '#e91e63' },
             ].map(stat => (
               <Paper key={stat.label} variant="outlined" sx={{ p: 2, textAlign: 'center', flex: '1 1 120px' }}>
-                <Typography variant="h5" color={stat.color} fontWeight="bold">
+                <Typography variant="h5" color={stat.color} sx={{ fontWeight: 'bold' }}>
                   {stat.value}{stat.unit}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">{stat.label}</Typography>
@@ -92,7 +92,7 @@ export default function SummaryPage() {
           <Divider sx={{ mb: 3 }} />
 
           {summary.entries.length === 0 ? (
-            <Typography color="text.secondary" textAlign="center">No entries for this period.</Typography>
+            <Typography color="text.secondary" sx={{ textAlign: "center" }}>No entries for this period.</Typography>
           ) : (
             <SummaryCharts summary={summary} />
           )}
