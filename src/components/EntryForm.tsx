@@ -60,21 +60,21 @@ export default function EntryForm({ initial, onSave, onCancel }: Props) {
       <TextField
         label="Work hours"
         type="number"
-        inputProps={{ min: 0, max: 24, step: 0.5 }}
+        slotProps={{ htmlInput: { min: 0, max: 24, step: 0.5 } }}
         value={workHours}
         onChange={e => setWorkHours(e.target.value)}
       />
       <TextField
         label="Free time hours"
         type="number"
-        inputProps={{ min: 0, max: 24, step: 0.5 }}
+        slotProps={{ htmlInput: { min: 0, max: 24, step: 0.5 } }}
         value={freeTimeHours}
         onChange={e => setFreeTimeHours(e.target.value)}
       />
       <TextField
         label="Sleeping hours"
         type="number"
-        inputProps={{ min: 0, max: 24, step: 0.5 }}
+        slotProps={{ htmlInput: { min: 0, max: 24, step: 0.5 } }}
         value={sleepingHours}
         onChange={e => setSleepingHours(e.target.value)}
       />
@@ -100,7 +100,7 @@ export default function EntryForm({ initial, onSave, onCancel }: Props) {
         onChange={e => setNotes(e.target.value)}
       />
 
-      <Stack direction="row" spacing={1} justifyContent="flex-end">
+      <Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
         {onCancel && (
           <Button onClick={onCancel} disabled={saving}>Cancel</Button>
         )}
