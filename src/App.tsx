@@ -35,7 +35,7 @@ export default function App() {
 
       <Container maxWidth="lg" sx={{ mt: 4, mb: 6 }}>
         <Box hidden={tab !== 0}><DashboardPage /></Box>
-        <Box hidden={tab !== 1}><SummaryPage /></Box>
+        <Box hidden={tab !== 1}><SummaryPage isActive={tab === 1} /></Box>
       </Container>
     </LocalizationProvider>
     </ToastProvider>

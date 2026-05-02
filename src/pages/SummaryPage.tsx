@@ -18,7 +18,7 @@ function formatHM(hours: number): string {
   return m > 0 ? `${h}h ${m}min` : `${h}h`;
 }
 
-export default function SummaryPage() {
+export default function SummaryPage({ isActive }: { isActive?: boolean }) {
   const [period, setPeriod] = useState<Period>('weekly');
   const [date, setDate] = useState(dayjs());
   const [summary, setSummary] = useState<Summary | null>(null);
@@ -37,7 +37,7 @@ export default function SummaryPage() {
     }
   }, [period, date]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { if (isActive !== false) load(); }, [isActive, load]);
 
   const navigate = (dir: -1 | 1) => {
     setDate(prev =>
