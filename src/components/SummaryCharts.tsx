@@ -12,15 +12,15 @@ interface Props {
 export default function SummaryCharts({ summary }: Props) {
   const barData = summary.entries.map(e => ({
     date: e.date.substring(5), // "MM-DD"
-    Work: e.workHours ?? 0,
-    'Free time': e.freeTimeHours ?? 0,
-    Sleep: e.sleepingHours ?? 0,
+    Work: Math.round((e.workHours ?? 0) * 100) / 100,
+    'Free time': Math.round((e.freeTimeHours ?? 0) * 100) / 100,
+    Sleep: Math.round((e.sleepingHours ?? 0) * 100) / 100,
     Appointments: e.appointments.reduce((s, a) => s + (a.durationHours ?? 0), 0),
   }));
 
   const moodData = summary.entries
-    .filter(e => e.mood != null)
-    .map(e => ({ date: e.date.substring(5), Mood: e.mood }));
+    .filter(e => e.mood != null || e.health != null)
+    .map(e => ({ date: e.date.substring(5), Mood: e.mood ?? undefined, Health: e.health ?? undefined }));
 
   return (
     <Box>
@@ -42,7 +42,7 @@ export default function SummaryCharts({ summary }: Props) {
       </ResponsiveContainer>
 
       <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 3, mb: 1 }}>
-        Mood trend
+        Mood &amp; Health trend
       </Typography>
       <ResponsiveContainer width="100%" height={180}>
         <LineChart data={moodData} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
@@ -50,7 +50,9 @@ export default function SummaryCharts({ summary }: Props) {
           <XAxis dataKey="date" />
           <YAxis domain={[1, 10]} ticks={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]} />
           <Tooltip />
-          <Line type="monotone" dataKey="Mood" stroke="#e91e63" strokeWidth={2} dot />
+          <Legend />
+          <Line type="monotone" dataKey="Mood"   stroke="#e91e63" strokeWidth={2} dot connectNulls />
+          <Line type="monotone" dataKey="Health" stroke="#00897b" strokeWidth={2} dot connectNulls />
         </LineChart>
       </ResponsiveContainer>
     </Box>

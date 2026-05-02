@@ -5,15 +5,24 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import EventIcon from '@mui/icons-material/Event';
+import dayjs from 'dayjs';
 import type { DailyEntry } from '../types/entry';
 
 interface Props {
   entries: DailyEntry[];
   onEdit: (entry: DailyEntry) => void;
   onDelete: (id: number) => void;
+  onViewAppointments?: (id: number) => void;
 }
 
-export default function EntryList({ entries, onEdit, onDelete }: Props) {
+function formatHM(hours: number | null): string {
+  if (!hours) return '-';
+  const h = Math.floor(hours);
+  const m = Math.round((hours - h) * 60);
+  return m > 0 ? `${h}h ${m}min` : `${h}h`;
+}
+
+export default function EntryList({ entries, onEdit, onDelete, onViewAppointments }: Props) {
   if (entries.length === 0) return null;
 
   return (
@@ -44,6 +53,9 @@ export default function EntryList({ entries, onEdit, onDelete }: Props) {
               <Typography variant="subtitle1" sx={{ fontWeight: 700 }} color="text.primary">
                 {e.date}
               </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ pl: 0.5 }}>
+                {dayjs(e.date).format('dddd')}
+              </Typography>
             </Box>
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Tooltip title="Edit">
@@ -61,28 +73,23 @@ export default function EntryList({ entries, onEdit, onDelete }: Props) {
 
           {/* Stats chips */}
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-            <Chip
-              label={`Work ${e.workHours ?? '-'}h`}
-              size="small"
-              color="primary"
-              variant="outlined"
-            />
-            <Chip
-              label={`Free ${e.freeTimeHours ?? '-'}h`}
-              size="small"
-              variant="outlined"
-            />
-            <Chip
-              label={`Sleep ${e.sleepingHours ?? '-'}h`}
-              size="small"
-              variant="outlined"
-            />
+            <Chip label={`Work ${formatHM(e.workHours)}`}     size="small" color="primary" variant="outlined" />
+            <Chip label={`Free ${formatHM(e.freeTimeHours)}`} size="small" variant="outlined" />
+            <Chip label={`Sleep ${formatHM(e.sleepingHours)}`} size="small" variant="outlined" />
             <Chip
               label={`Mood ${e.mood}/10`}
               size="small"
               color={e.mood >= 7 ? 'success' : e.mood >= 4 ? 'warning' : 'error'}
               variant="filled"
             />
+            {e.health != null && (
+              <Chip
+                label={`Health ${e.health}/10`}
+                size="small"
+                color={e.health >= 7 ? 'success' : e.health >= 4 ? 'warning' : 'error'}
+                variant="filled"
+              />
+            )}
           </Box>
 
           {/* Notes */}
@@ -102,9 +109,18 @@ export default function EntryList({ entries, onEdit, onDelete }: Props) {
           )}
 
           {/* Appointment count */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 'auto' }}>
-            <EventIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-            <Typography variant="caption" color="text.secondary">
+          <Box
+            sx={{
+              display: 'flex', alignItems: 'center', gap: 1, mt: 'auto',
+              ...(onViewAppointments && {
+                cursor: 'pointer',
+                '&:hover': { opacity: 0.75 },
+              }),
+            }}
+            onClick={onViewAppointments ? () => onViewAppointments(e.id) : undefined}
+          >
+            <EventIcon sx={{ fontSize: 16, color: onViewAppointments ? 'primary.main' : 'text.secondary' }} />
+            <Typography variant="caption" color={onViewAppointments ? 'primary.main' : 'text.secondary'}>
               {e.appointments.length === 0
                 ? 'No appointments'
                 : `${e.appointments.length} appointment${e.appointments.length > 1 ? 's' : ''}`}

@@ -12,6 +12,12 @@ import SummaryCharts from '../components/SummaryCharts';
 
 type Period = 'weekly' | 'monthly';
 
+function formatHM(hours: number): string {
+  const h = Math.floor(hours);
+  const m = Math.round((hours - h) * 60);
+  return m > 0 ? `${h}h ${m}min` : `${h}h`;
+}
+
 export default function SummaryPage() {
   const [period, setPeriod] = useState<Period>('weekly');
   const [date, setDate] = useState(dayjs());
@@ -46,7 +52,7 @@ export default function SummaryPage() {
   return (
     <Box>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}>
-        <Typography variant="h5">Summary</Typography>
+        <Typography variant="h5" sx={{ fontWeight: 700 }}>Summary</Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button size="small" variant={period === 'weekly' ? 'contained' : 'outlined'} onClick={() => setPeriod('weekly')}>
             Weekly
@@ -61,7 +67,7 @@ export default function SummaryPage() {
         <Button variant="outlined" size="small" onClick={() => navigate(-1)} startIcon={<ChevronLeftIcon />}>
           Prev
         </Button>
-        <Typography variant="body1" sx={{ flexGrow: 1, textAlign: 'center' }}>{periodLabel}</Typography>
+        <Typography variant="body1" sx={{ flexGrow: 1, textAlign: 'center', fontWeight: 600 }}>{periodLabel}</Typography>
         <Button variant="outlined" size="small" onClick={() => navigate(1)} endIcon={<ChevronRightIcon />}>
           Next
         </Button>
@@ -74,15 +80,16 @@ export default function SummaryPage() {
         <>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3 }}>
             {[
-              { label: 'Work', value: summary.totalWorkHours, unit: 'h', color: '#1976d2' },
-              { label: 'Free time', value: summary.totalFreeTimeHours, unit: 'h', color: '#4caf50' },
-              { label: 'Sleep', value: summary.totalSleepingHours, unit: 'h', color: '#9c27b0' },
-              { label: 'Appointments', value: summary.totalAppointmentHours, unit: 'h', color: '#ff9800' },
-              { label: 'Avg Mood', value: summary.avgMood.toFixed(1), unit: '/10', color: '#e91e63' },
+              { label: 'Work',         value: formatHM(summary.totalWorkHours),        color: '#1976d2' },
+              { label: 'Free time',    value: formatHM(summary.totalFreeTimeHours),    color: '#4caf50' },
+              { label: 'Sleep',        value: formatHM(summary.totalSleepingHours),    color: '#9c27b0' },
+              { label: 'Appointments', value: formatHM(summary.totalAppointmentHours), color: '#ff9800' },
+              { label: 'Avg Mood',     value: `${summary.avgMood.toFixed(1)}/10`,      color: '#e91e63' },
+              { label: 'Avg Health',   value: `${summary.avgHealth.toFixed(1)}/10`,    color: '#00897b' },
             ].map(stat => (
               <Paper key={stat.label} variant="outlined" sx={{ p: 2, textAlign: 'center', flex: '1 1 120px' }}>
                 <Typography variant="h5" color={stat.color} sx={{ fontWeight: 'bold' }}>
-                  {stat.value}{stat.unit}
+                  {stat.value}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">{stat.label}</Typography>
               </Paper>

@@ -14,7 +14,7 @@ interface Props {
 export default function AppointmentForm({ dailyEntryId, initial, onSave, onCancel }: Props) {
   const [title, setTitle] = useState(initial?.title ?? '');
   const [time, setTime] = useState<Dayjs | null>(
-    initial?.time ? dayjs(`2000-01-01T${initial.time}`) : null
+    initial?.time ? dayjs(`2000-01-01T${initial.time}`) : dayjs()
   );
   const [durationHours, setDurationHours] = useState<string>(
     initial?.durationHours != null ? String(initial.durationHours) : ''
@@ -54,11 +54,15 @@ export default function AppointmentForm({ dailyEntryId, initial, onSave, onCance
       <TextField
         label="Duration (hours)"
         type="number"
-        inputProps={{ min: 0, max: 24, step: 0.5 }}
+        slotProps={{ htmlInput: {min: 0, max: 24, step: 0.25} }}
         value={durationHours}
         onChange={e => setDurationHours(e.target.value)}
       />
-      <Stack direction="row" spacing={1} justifyContent="flex-end">
+      <Stack spacing={1}
+             sx={{
+                 flexDirection: 'row',
+                 justifyContent: 'flex-end'
+             }}>
         <Button onClick={onCancel} disabled={saving}>Cancel</Button>
         <Button variant="contained" onClick={handleSubmit} disabled={saving || !title.trim()}>
           {initial ? 'Update' : 'Add'}

@@ -1,15 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
   Alert, Box, Button, CircularProgress, Dialog, DialogContent,
-  DialogTitle, Divider, Paper, Typography,
+  DialogTitle, Divider, FormControl, InputLabel, MenuItem,
+  Paper, Select, Typography,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EventNoteIcon from '@mui/icons-material/EventNote';
+import dayjs from 'dayjs';
 import type { DailyEntry, DailyEntryInput } from '../types/entry';
-import { entriesApi } from '../services/api';
+import type { AppointmentInput } from '../types/entry';
+import { entriesApi, appointmentsApi, timeBlocksApi } from '../services/api';
 import EntryForm from '../components/EntryForm';
 import EntryList from '../components/EntryList';
 import AppointmentList from '../components/AppointmentList';
+import AppointmentForm from '../components/AppointmentForm';
 import { useToast } from '../context/ToastContext';
 
 export default function DashboardPage() {
@@ -18,6 +22,8 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<DailyEntry | null>(null);
+  const [newApptOpen, setNewApptOpen] = useState(false);
+  const [selectedEntryId, setSelectedEntryId] = useState<number | null>(null);
   const { toast } = useToast();
 
   const load = useCallback(async () => {
@@ -34,8 +40,13 @@ export default function DashboardPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const handleCreate = async (data: DailyEntryInput) => {
-    await entriesApi.create(data);
+  const handleCreate = async (data: DailyEntryInput, pendingBlocks?: { type: string; startTime: string; endTime: string }[]) => {
+    const created = await entriesApi.create(data);
+    if (pendingBlocks && pendingBlocks.length > 0) {
+      await Promise.all(pendingBlocks.map(b =>
+        timeBlocksApi.create({ dailyEntryId: created.id, type: b.type, startTime: b.startTime, endTime: b.endTime })
+      ));
+    }
     setAddOpen(false);
     toast.success('Entry created');
     await load();
@@ -55,7 +66,19 @@ export default function DashboardPage() {
     await load();
   };
 
-  const entriesWithAppointments = entries.filter(e => e.appointments.length > 0);
+  const openNewAppt = () => {
+    const today = new Date().toISOString().split('T')[0];
+    const defaultEntry = entries.find(e => e.date === today) ?? entries[0];
+    setSelectedEntryId(defaultEntry?.id ?? null);
+    setNewApptOpen(true);
+  };
+
+  const handleNewApptCreate = async (data: AppointmentInput) => {
+    await appointmentsApi.create(data);
+    setNewApptOpen(false);
+    toast.success('Appointment created');
+    await load();
+  };
 
   if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}><CircularProgress /></Box>;
   if (error) return <Alert severity="error">{error}</Alert>;
@@ -75,6 +98,9 @@ export default function DashboardPage() {
         entries={entries}
         onEdit={e => setEditTarget(e)}
         onDelete={handleDelete}
+        onViewAppointments={id => {
+          document.getElementById(`appointments-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }}
       />
 
       {entries.length === 0 && (
@@ -89,42 +115,37 @@ export default function DashboardPage() {
           <Box sx={{
             display: 'flex',
             alignItems: 'center',
-            gap: 1,
-            mb: 2
+            justifyContent: 'space-between',
+            mb: 2,
           }}>
-            <EventNoteIcon sx={{ color: 'primary.main' }} />
-            <Typography variant="h6" sx={{fontWeight:700}} color="text.primary">
-              Appointments
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <EventNoteIcon sx={{ color: 'primary.main' }} />
+              <Typography variant="h6" sx={{fontWeight:700}} color="text.primary">
+                Appointments
+              </Typography>
+            </Box>
+            <Button variant="outlined" size="small" startIcon={<AddIcon />} onClick={openNewAppt}>
+              New Appointment
+            </Button>
           </Box>
 
-          {entriesWithAppointments.length === 0 ? (
-            <Typography variant="body2" color="text.secondary">
-              No appointments yet. Add one via an entry.
-            </Typography>
-          ) : (
-            entriesWithAppointments.map((entry, i) => (
-              <Box key={entry.id}>
-                {i > 0 && <Divider sx={{ my: 2 }} />}
-                <Typography
-                  variant="subtitle2"
-                  color="primary.main"
-                  sx={{ fontWeight: 600, mb: 1 }}
-                >
-                  {entry.date}
-                </Typography>
-                <AppointmentList
-                  dailyEntryId={entry.id}
-                  appointments={entry.appointments}
-                  onChange={load}
-                />
-              </Box>
-            ))
-          )}
+          {entries.map((entry, i) => (
+            <Box key={entry.id} id={`appointments-${entry.id}`}>
+              {i > 0 && <Divider sx={{ my: 2 }} />}
+              <Typography variant="subtitle2" color="primary.main" sx={{ fontWeight: 600, mb: 1 }}>
+                {entry.date}
+              </Typography>
+              <AppointmentList
+                dailyEntryId={entry.id}
+                appointments={entry.appointments}
+                onChange={load}
+              />
+            </Box>
+          ))}
         </Paper>
       )}
 
-      {/* Dialogs */}
+      {/* New Entry dialog */}
       <Dialog open={addOpen} onClose={() => setAddOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>New Day Entry</DialogTitle>
         <DialogContent>
@@ -134,8 +155,11 @@ export default function DashboardPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Edit Entry dialog */}
       <Dialog open={!!editTarget} onClose={() => setEditTarget(null)} maxWidth="sm" fullWidth>
-        <DialogTitle>Edit Entry</DialogTitle>
+        <DialogTitle>
+          {editTarget && `${dayjs(editTarget.date).format('dddd')}, ${editTarget.date}`}
+        </DialogTitle>
         <DialogContent>
           <Box sx={{pt:1}}>
             {editTarget && (
@@ -143,6 +167,36 @@ export default function DashboardPage() {
                 initial={editTarget}
                 onSave={handleUpdate}
                 onCancel={() => setEditTarget(null)}
+                onRefresh={load}
+              />
+            )}
+          </Box>
+        </DialogContent>
+      </Dialog>
+
+      {/* New Appointment dialog */}
+      <Dialog open={newApptOpen} onClose={() => setNewApptOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>New Appointment</DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <FormControl fullWidth>
+              <InputLabel>Date</InputLabel>
+              <Select
+                value={selectedEntryId ?? ''}
+                label="Date"
+                onChange={e => setSelectedEntryId(Number(e.target.value))}
+              >
+                {entries.map(entry => (
+                  <MenuItem key={entry.id} value={entry.id}>{entry.date}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {selectedEntryId != null && (
+              <AppointmentForm
+                key={selectedEntryId}
+                dailyEntryId={selectedEntryId}
+                onSave={handleNewApptCreate}
+                onCancel={() => setNewApptOpen(false)}
               />
             )}
           </Box>
