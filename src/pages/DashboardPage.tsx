@@ -40,6 +40,12 @@ export default function DashboardPage() {
 
   useEffect(() => { load(); }, [load]);
 
+  useEffect(() => {
+    const handleVisibility = () => { if (document.visibilityState === 'visible') load(); };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, [load]);
+
   const handleCreate = async (data: DailyEntryInput, pendingBlocks?: { type: string; startTime: string; endTime: string }[]) => {
     const created = await entriesApi.create(data);
     if (pendingBlocks && pendingBlocks.length > 0) {
