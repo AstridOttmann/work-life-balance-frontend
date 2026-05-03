@@ -46,7 +46,7 @@ export default function DashboardPage() {
     return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, [load]);
 
-  const handleCreate = async (data: DailyEntryInput, pendingBlocks?: { type: string; startTime: string; endTime: string }[]) => {
+  const handleCreate = async (data: DailyEntryInput, pendingBlocks?: { type: 'WORK' | 'FREE'; startTime: string; endTime: string }[]) => {
     const created = await entriesApi.create(data);
     if (pendingBlocks && pendingBlocks.length > 0) {
       await Promise.all(pendingBlocks.map(b =>
