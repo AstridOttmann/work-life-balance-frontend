@@ -7,18 +7,23 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import DashboardPage from './pages/DashboardPage';
 import SummaryPage from './pages/SummaryPage';
 import { ToastProvider } from './context/ToastContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import LoginDialog from './components/LoginDialog';
+import AccountMenu from './components/AccountMenu';
 
-export default function App() {
+function AppShell() {
+  const { token } = useAuth();
   const [tab, setTab] = useState(0);
 
   return (
-    <ToastProvider>
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <>
       <AppBar position="static">
-        <Toolbar sx={{ justifyContent: 'center' }}>
-          <Typography variant="h6">
-            Work-Life Balance
-          </Typography>
+        <Toolbar>
+          <Box sx={{ flex: 1 }} />
+          <Typography variant="h6">Work-Life Balance</Typography>
+          <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+            <AccountMenu />
+          </Box>
         </Toolbar>
         <Tabs
           value={tab}
@@ -37,7 +42,20 @@ export default function App() {
         <Box hidden={tab !== 0}><DashboardPage /></Box>
         <Box hidden={tab !== 1}><SummaryPage isActive={tab === 1} /></Box>
       </Container>
-    </LocalizationProvider>
+
+      <LoginDialog open={!token} />
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <ToastProvider>
+      <AuthProvider>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <AppShell />
+        </LocalizationProvider>
+      </AuthProvider>
     </ToastProvider>
   );
 }
