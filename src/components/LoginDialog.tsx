@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import {
   Box, Button, CircularProgress, Dialog, DialogContent,
-  DialogTitle, TextField, Typography,
+  DialogTitle, IconButton, InputAdornment, TextField, Typography,
 } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useAuth } from '../context/AuthContext';
 
 interface Props {
@@ -15,6 +17,7 @@ export default function LoginDialog({ open }: Props) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,11 +48,20 @@ export default function LoginDialog({ open }: Props) {
           />
           <TextField
             label="Password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
             fullWidth
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword(v => !v)} edge="end" tabIndex={-1}>
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
           {error && (
             <Typography variant="body2" color="error" sx={{ mt: -1 }}>
