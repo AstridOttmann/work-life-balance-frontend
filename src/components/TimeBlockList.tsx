@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Box, Button, Dialog, DialogContent, DialogTitle, Divider,
+  Box, Button, Chip, Dialog, DialogContent, DialogTitle, Divider,
   IconButton, List, ListItem, ListItemText, Typography,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -20,6 +20,7 @@ interface Props {
 }
 
 function blockDuration(b: TimeBlock): string {
+  if (!b.endTime) return '';
   const [sh, sm] = b.startTime.split(':').map(Number);
   const [eh, em] = b.endTime.split(':').map(Number);
   let mins = (eh * 60 + em) - (sh * 60 + sm);
@@ -63,9 +64,7 @@ export default function TimeBlockList({ dailyEntryId, type, blocks, onChange, la
   return (
     <Box>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
-        <Typography variant="body2" sx={{ fontWeight: 600, color }}>
-          {label}
-        </Typography>
+        <Typography variant="body2" sx={{ fontWeight: 600, color }}>{label}</Typography>
         <Button startIcon={<AddIcon />} size="small" onClick={() => setAddOpen(true)}>Add</Button>
       </Box>
 
@@ -80,14 +79,29 @@ export default function TimeBlockList({ dailyEntryId, type, blocks, onChange, la
                 disablePadding
                 secondaryAction={
                   <Box sx={{ display: 'flex', gap: 0.5 }}>
-                    <IconButton size="small" onClick={() => setEditTarget(b)}><EditIcon fontSize="small" /></IconButton>
-                    <IconButton size="small" onClick={() => handleDelete(b.id)}><DeleteIcon fontSize="small" /></IconButton>
+                    {b.endTime !== null && (
+                      <IconButton size="small" onClick={() => setEditTarget(b)}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    )}
+                    <IconButton size="small" onClick={() => handleDelete(b.id)}>
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
                   </Box>
                 }
               >
                 <ListItemText
-                  primary={`${b.startTime.substring(0, 5)} – ${b.endTime.substring(0, 5)}`}
-                  secondary={blockDuration(b)}
+                  primary={
+                    b.endTime === null ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <span>{b.startTime.substring(0, 5)}</span>
+                        <Chip label="Running" size="small" color="success" />
+                      </Box>
+                    ) : (
+                      `${b.startTime.substring(0, 5)} – ${b.endTime.substring(0, 5)}`
+                    )
+                  }
+                  secondary={b.endTime !== null ? blockDuration(b) : null}
                 />
               </ListItem>
             </Box>

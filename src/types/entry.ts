@@ -3,14 +3,14 @@ export interface TimeBlock {
   dailyEntryId: number;
   type: 'WORK' | 'FREE';
   startTime: string;
-  endTime: string;
+  endTime: string | null;   // null while tracker is running
 }
 
 export interface TimeBlockInput {
   dailyEntryId: number;
   type: 'WORK' | 'FREE';
   startTime: string;
-  endTime: string;
+  endTime?: string;          // omitted when starting a tracker
 }
 
 export interface Appointment {
