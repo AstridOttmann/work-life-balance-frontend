@@ -6,6 +6,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import DashboardPage from './pages/DashboardPage';
 import SummaryPage from './pages/SummaryPage';
+import TrackingPage from './pages/TrackingPage';
 import { ToastProvider } from './context/ToastContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginDialog from './components/LoginDialog';
@@ -35,12 +36,14 @@ function AppShell() {
         >
           <Tab label="Daily Log" />
           <Tab label="Summary" />
+          <Tab label="Tracking" />
         </Tabs>
       </AppBar>
 
       <Container maxWidth="lg" sx={{ mt: 4, mb: 6 }}>
         <Box hidden={tab !== 0}><DashboardPage /></Box>
         <Box hidden={tab !== 1}><SummaryPage isActive={tab === 1} /></Box>
+        <Box hidden={tab !== 2}><TrackingPage /></Box>
       </Container>
 
       <LoginDialog open={!token} />
