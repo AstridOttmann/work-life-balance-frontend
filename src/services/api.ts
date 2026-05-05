@@ -3,6 +3,12 @@ import type { Appointment, AppointmentInput, DailyEntry, DailyEntryInput, Summar
 
 export const api = axios.create({ baseURL: 'http://localhost:8080/api' });
 
+api.interceptors.request.use(config => {
+  const t = localStorage.getItem('token');
+  if (t) config.headers['Authorization'] = `Bearer ${t}`;
+  return config;
+});
+
 export const entriesApi = {
   getAll: (from?: string, to?: string) =>
     api.get<DailyEntry[]>('/entries', { params: { from, to } }).then(r => r.data),

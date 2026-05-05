@@ -31,11 +31,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const reqId = api.interceptors.request.use(config => {
-      const t = localStorage.getItem('token');
-      if (t) config.headers['Authorization'] = `Bearer ${t}`;
-      return config;
-    });
     const resId = api.interceptors.response.use(
       response => response,
       (error: AxiosError) => {
@@ -43,10 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return Promise.reject(error);
       }
     );
-    return () => {
-      api.interceptors.request.eject(reqId);
-      api.interceptors.response.eject(resId);
-    };
+    return () => api.interceptors.response.eject(resId);
   }, [logout]);
 
   return (
