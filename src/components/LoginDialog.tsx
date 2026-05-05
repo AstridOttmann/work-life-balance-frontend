@@ -53,14 +53,16 @@ export default function LoginDialog({ open }: Props) {
             onChange={e => setPassword(e.target.value)}
             required
             fullWidth
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={() => setShowPassword(v => !v)} edge="end" tabIndex={-1}>
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
+            slotProps={{
+              input: {
+                endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword(v => !v)} edge="end" tabIndex={-1}>
+                        {showPassword ? <VisibilityOff/> : <Visibility/>}
+                      </IconButton>
+                    </InputAdornment>
+                ),
+              }
             }}
           />
           {error && (
