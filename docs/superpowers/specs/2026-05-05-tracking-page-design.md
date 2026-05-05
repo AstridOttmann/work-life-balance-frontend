@@ -101,7 +101,13 @@ On mount: fetch today's entry. For each block with `endTime === null`:
 - Set `status: 'running'`, `startTimestamp: Date.now()`, restore `blockId` and `startTime`
 
 ### Mutual exclusion
-None — Work and Free timers are fully independent.
+Two trackers cannot be **running** simultaneously, but one can be paused while the other runs.
+
+- **Start** is disabled if this tracker is already active (running or paused), OR if the other tracker is running
+- **Resume** (pressing Pause while paused) is disabled if the other tracker is running
+- **Stop** is always available while active — stopping one tracker never affects the other
+
+Example valid sequence: Work starts → Work pauses → Free starts → Free is running while Work is paused → Free stops → Work can now resume
 
 ---
 
@@ -120,7 +126,7 @@ None — Work and Free timers are fully independent.
 | Timer | `variant="h2"`, ~64px, monospace, `HH:mm:ss` |
 | Status chip | **Running** (green), **Paused** (amber), **Idle** (grey) |
 | Buttons | Start · Pause/Resume · Stop (row of 3) |
-| Button states | Start disabled when running/paused; Stop disabled when idle; Pause disabled when idle |
+| Button states | Start: disabled when this tracker is active OR other tracker is running; Pause/Resume: Resume disabled when other tracker is running; Stop: disabled when idle |
 
 No decorative SVG ring (unnecessary complexity; large timer provides equivalent visual weight).
 
