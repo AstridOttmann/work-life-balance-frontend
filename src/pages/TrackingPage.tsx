@@ -117,11 +117,15 @@ export default function TrackingPage({ isActive }: { isActive?: boolean }) {
   useEffect(() => { syncFromDB(); }, [syncFromDB]);
   useEffect(() => { if (isActive) syncFromDB(); }, [isActive, syncFromDB]);
 
-  // 1-second tick to re-render timer displays while running
+  // Tick aligned to wall-clock second boundaries so all devices display the same second
   useEffect(() => {
     if (work.status !== 'running' && free.status !== 'running') return;
-    const id = setInterval(() => setTick(t => t + 1), 1000);
-    return () => clearInterval(id);
+    let interval: ReturnType<typeof setInterval>;
+    const timeout = setTimeout(() => {
+      setTick(t => t + 1);
+      interval = setInterval(() => setTick(t => t + 1), 1000);
+    }, 1000 - (Date.now() % 1000));
+    return () => { clearTimeout(timeout); clearInterval(interval); };
   }, [work.status, free.status]);
 
   const ensureTodayEntry = useCallback(async (): Promise<number> => {
