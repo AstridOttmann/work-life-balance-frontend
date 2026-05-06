@@ -151,16 +151,16 @@ export default function TrackingPage({ isActive }: { isActive?: boolean }) {
     try {
       const dailyEntryId = await ensureTodayEntry();
       const now = dayjs();
-      const startTimeHHMM = now.format('HH:mm');
+      const segTime = now.format('HH:mm:ss');
       const block = await timeBlocksApi.create({
-        dailyEntryId, type, startTime: now.format('HH:mm:ss'), segmentStartTime: now.format('HH:mm:ss'),
+        dailyEntryId, type, startTime: segTime, segmentStartTime: segTime,
       });
       const state: TrackerState = {
         status: 'running',
         blockId: block.id,
         dailyEntryId,
-        startTime: startTimeHHMM,
-        startTimestamp: Date.now(),
+        startTime: now.format('HH:mm'),
+        startTimestamp: parseTimeAsToday(segTime),
         accumulatedMs: 0,
       };
       if (type === 'WORK') setWork(state);
@@ -187,13 +187,13 @@ export default function TrackingPage({ isActive }: { isActive?: boolean }) {
     } else if (tracker.status === 'paused') {
       if (!tracker.blockId || !tracker.dailyEntryId || !tracker.startTime) { toast.error('Failed to resume tracker'); return; }
       try {
-        const now = dayjs();
+        const segTime = dayjs().format('HH:mm:ss');
         await timeBlocksApi.update(tracker.blockId, {
           dailyEntryId: tracker.dailyEntryId, type,
           startTime: tracker.startTime + ':00', paused: false,
-          elapsedMs: tracker.accumulatedMs, segmentStartTime: now.format('HH:mm:ss'),
+          elapsedMs: tracker.accumulatedMs, segmentStartTime: segTime,
         });
-        setter(prev => ({ ...prev, status: 'running', startTimestamp: Date.now() }));
+        setter(prev => ({ ...prev, status: 'running', startTimestamp: parseTimeAsToday(segTime) }));
       } catch { toast.error('Failed to resume tracker'); }
     }
   }, [work, free, toast]);
