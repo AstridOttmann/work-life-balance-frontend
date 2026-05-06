@@ -95,7 +95,7 @@ export default function TimeBlockList({ dailyEntryId, type, blocks, onChange, la
                     b.endTime == null ? (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <span>{b.startTime.substring(0, 5)}</span>
-                        <Chip label="Running" size="small" color="success" />
+                        <Chip label={b.paused ? 'Paused' : 'Running'} size="small" color={b.paused ? 'warning' : 'success'} />
                       </Box>
                     ) : (
                       `${b.startTime.substring(0, 5)} – ${b.endTime.substring(0, 5)}`

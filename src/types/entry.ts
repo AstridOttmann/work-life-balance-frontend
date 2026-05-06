@@ -3,7 +3,8 @@ export interface TimeBlock {
   dailyEntryId: number;
   type: 'WORK' | 'FREE';
   startTime: string;
-  endTime: string | null;   // null while tracker is running
+  endTime: string | null;   // null while tracker is running or paused
+  paused: boolean;
 }
 
 export interface TimeBlockInput {
@@ -11,6 +12,7 @@ export interface TimeBlockInput {
   type: 'WORK' | 'FREE';
   startTime: string;
   endTime?: string;          // omitted when starting a tracker
+  paused?: boolean;
 }
 
 export interface Appointment {
