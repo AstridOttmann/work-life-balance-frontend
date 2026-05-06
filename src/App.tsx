@@ -14,7 +14,7 @@ import AccountMenu from './components/AccountMenu';
 
 function AppShell() {
   const { token } = useAuth();
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState(1);
 
   return (
     <>
@@ -34,16 +34,16 @@ function AppShell() {
           centered
           sx={{ bgcolor: 'primary.dark' }}
         >
-          <Tab label="Daily Log" />
-          <Tab label="Summary" />
           <Tab label="Tracking" />
+          <Tab label="Daily Log" />
+          <Tab label="Statistics" />
         </Tabs>
       </AppBar>
 
       <Container maxWidth="lg" sx={{ mt: 4, mb: 6 }}>
-        <Box hidden={tab !== 0}><DashboardPage /></Box>
-        <Box hidden={tab !== 1}><SummaryPage isActive={tab === 1} /></Box>
-        <Box hidden={tab !== 2}><TrackingPage /></Box>
+        <Box hidden={tab !== 0}><TrackingPage /></Box>
+        <Box hidden={tab !== 1}><DashboardPage /></Box>
+        <Box hidden={tab !== 2}><SummaryPage isActive={tab === 2} /></Box>
       </Container>
 
       <LoginDialog open={!token} />
