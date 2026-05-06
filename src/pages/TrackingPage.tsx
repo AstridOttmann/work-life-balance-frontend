@@ -89,28 +89,30 @@ export default function TrackingPage({ isActive }: { isActive?: boolean }) {
       const freeBlock = running.find(b => b.type === 'FREE');
       if (workBlock) {
         const paused = workBlock.paused;
+        const seg = workBlock.segmentStartTime ?? workBlock.startTime;
         setWork({
           status: paused ? 'paused' : 'running',
           blockId: workBlock.id, dailyEntryId: entry!.id,
           startTime: workBlock.startTime.substring(0, 5),
           startTimestamp: paused ? null : now,
           accumulatedMs: paused
-            ? Number(localStorage.getItem('wlb_tracker_WORK') ?? '0')
-            : now - parseTimeAsToday(workBlock.startTime),
+            ? workBlock.elapsedMs
+            : workBlock.elapsedMs + (now - parseTimeAsToday(seg)),
         });
-      } else { localStorage.removeItem('wlb_tracker_WORK'); setWork(IDLE); }
+      } else setWork(IDLE);
       if (freeBlock) {
         const paused = freeBlock.paused;
+        const seg = freeBlock.segmentStartTime ?? freeBlock.startTime;
         setFree({
           status: paused ? 'paused' : 'running',
           blockId: freeBlock.id, dailyEntryId: entry!.id,
           startTime: freeBlock.startTime.substring(0, 5),
           startTimestamp: paused ? null : now,
           accumulatedMs: paused
-            ? Number(localStorage.getItem('wlb_tracker_FREE') ?? '0')
-            : now - parseTimeAsToday(freeBlock.startTime),
+            ? freeBlock.elapsedMs
+            : freeBlock.elapsedMs + (now - parseTimeAsToday(seg)),
         });
-      } else { localStorage.removeItem('wlb_tracker_FREE'); setFree(IDLE); }
+      } else setFree(IDLE);
     });
   }, []);
 
@@ -146,7 +148,7 @@ export default function TrackingPage({ isActive }: { isActive?: boolean }) {
       const now = dayjs();
       const startTimeHHMM = now.format('HH:mm');
       const block = await timeBlocksApi.create({
-        dailyEntryId, type, startTime: now.format('HH:mm:ss'),
+        dailyEntryId, type, startTime: now.format('HH:mm:ss'), segmentStartTime: now.format('HH:mm:ss'),
       });
       const state: TrackerState = {
         status: 'running',
@@ -168,24 +170,24 @@ export default function TrackingPage({ isActive }: { isActive?: boolean }) {
     const setter = type === 'WORK' ? setWork : setFree;
     if (tracker.status === 'running') {
       if (tracker.blockId && tracker.dailyEntryId && tracker.startTime) {
+        const newAcc = tracker.accumulatedMs + (tracker.startTimestamp != null ? Date.now() - tracker.startTimestamp : 0);
         try {
           await timeBlocksApi.update(tracker.blockId, {
             dailyEntryId: tracker.dailyEntryId, type,
-            startTime: tracker.startTime + ':00', paused: true,
+            startTime: tracker.startTime + ':00', paused: true, elapsedMs: newAcc,
           });
         } catch { toast.error('Failed to pause tracker'); return; }
+        setter(prev => ({ ...prev, status: 'paused', startTimestamp: null, accumulatedMs: newAcc }));
       }
-      const newAcc = tracker.accumulatedMs + (tracker.startTimestamp != null ? Date.now() - tracker.startTimestamp : 0);
-      localStorage.setItem(`wlb_tracker_${type}`, String(newAcc));
-      setter(prev => ({ ...prev, status: 'paused', startTimestamp: null, accumulatedMs: newAcc }));
     } else if (tracker.status === 'paused') {
       if (!tracker.blockId || !tracker.dailyEntryId || !tracker.startTime) { toast.error('Failed to resume tracker'); return; }
       try {
+        const now = dayjs();
         await timeBlocksApi.update(tracker.blockId, {
           dailyEntryId: tracker.dailyEntryId, type,
           startTime: tracker.startTime + ':00', paused: false,
+          segmentStartTime: now.format('HH:mm:ss'),
         });
-        localStorage.removeItem(`wlb_tracker_${type}`);
         setter(prev => ({ ...prev, status: 'running', startTimestamp: Date.now() }));
       } catch { toast.error('Failed to resume tracker'); }
     }
@@ -199,7 +201,6 @@ export default function TrackingPage({ isActive }: { isActive?: boolean }) {
         dailyEntryId: tracker.dailyEntryId, type,
         startTime: tracker.startTime + ':00', paused: false, endTime: dayjs().format('HH:mm:ss'),
       });
-      localStorage.removeItem(`wlb_tracker_${type}`);
       if (type === 'WORK') setWork(IDLE); else setFree(IDLE);
       await refreshToday();
     } catch { toast.error('Failed to stop tracker'); }

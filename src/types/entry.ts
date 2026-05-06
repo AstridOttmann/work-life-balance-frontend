@@ -5,6 +5,8 @@ export interface TimeBlock {
   startTime: string;
   endTime: string | null;   // null while tracker is running or paused
   paused: boolean;
+  elapsedMs: number;
+  segmentStartTime: string | null;
 }
 
 export interface TimeBlockInput {
@@ -13,6 +15,8 @@ export interface TimeBlockInput {
   startTime: string;
   endTime?: string;          // omitted when starting a tracker
   paused?: boolean;
+  elapsedMs?: number;
+  segmentStartTime?: string;
 }
 
 export interface Appointment {
