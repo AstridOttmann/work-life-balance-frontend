@@ -147,40 +147,48 @@ export default function TrackingPage() {
     }
   }, [ensureTodayEntry, toast]);
 
-  const handlePause = useCallback((type: 'WORK' | 'FREE') => {
+  const handlePause = useCallback(async (type: 'WORK' | 'FREE') => {
+    const tracker = type === 'WORK' ? work : free;
     const setter = type === 'WORK' ? setWork : setFree;
-    setter(prev => {
-      if (prev.status === 'running') {
-        return {
-          ...prev,
-          status: 'paused',
-          accumulatedMs: prev.accumulatedMs + (prev.startTimestamp != null ? Date.now() - prev.startTimestamp : 0),
-          startTimestamp: null,
-        };
+    if (tracker.status === 'running') {
+      if (tracker.blockId && tracker.dailyEntryId && tracker.startTime) {
+        try {
+          await timeBlocksApi.update(tracker.blockId, {
+            dailyEntryId: tracker.dailyEntryId, type,
+            startTime: tracker.startTime + ':00', endTime: dayjs().format('HH:mm:ss'),
+          });
+        } catch { toast.error('Failed to pause tracker'); return; }
       }
-      if (prev.status === 'paused') {
-        return { ...prev, status: 'running', startTimestamp: Date.now() };
-      }
-      return prev;
-    });
-  }, []);
+      setter(prev => ({
+        ...prev, status: 'paused', blockId: null, startTimestamp: null,
+        accumulatedMs: prev.accumulatedMs + (prev.startTimestamp != null ? Date.now() - prev.startTimestamp : 0),
+      }));
+    } else if (tracker.status === 'paused') {
+      if (!tracker.dailyEntryId) { toast.error('Failed to resume tracker'); return; }
+      try {
+        const now = dayjs();
+        const block = await timeBlocksApi.create({ dailyEntryId: tracker.dailyEntryId, type, startTime: now.format('HH:mm:ss') });
+        setter(prev => ({ ...prev, status: 'running', blockId: block.id, startTime: now.format('HH:mm'), startTimestamp: Date.now() }));
+      } catch { toast.error('Failed to resume tracker'); }
+    }
+  }, [work, free, toast]);
 
   const handleStop = useCallback(async (type: 'WORK' | 'FREE') => {
     const tracker = type === 'WORK' ? work : free;
+    if (tracker.status === 'paused') {
+      if (type === 'WORK') setWork(IDLE); else setFree(IDLE);
+      await refreshToday();
+      return;
+    }
     if (!tracker.blockId || !tracker.dailyEntryId || !tracker.startTime) return;
     try {
       await timeBlocksApi.update(tracker.blockId, {
-        dailyEntryId: tracker.dailyEntryId,
-        type,
-        startTime: tracker.startTime + ':00',
-        endTime: dayjs().format('HH:mm:ss'),
+        dailyEntryId: tracker.dailyEntryId, type,
+        startTime: tracker.startTime + ':00', endTime: dayjs().format('HH:mm:ss'),
       });
-      if (type === 'WORK') setWork(IDLE);
-      else setFree(IDLE);
+      if (type === 'WORK') setWork(IDLE); else setFree(IDLE);
       await refreshToday();
-    } catch {
-      toast.error('Failed to stop tracker');
-    }
+    } catch { toast.error('Failed to stop tracker'); }
   }, [work, free, refreshToday, toast]);
 
   const summary = calcTodaySummary(todayEntry);
