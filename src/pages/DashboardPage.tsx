@@ -16,7 +16,7 @@ import AppointmentList from '../components/AppointmentList';
 import AppointmentForm from '../components/AppointmentForm';
 import { useToast } from '../context/ToastContext';
 
-export default function DashboardPage() {
+export default function DashboardPage({ isActive }: { isActive?: boolean }) {
   const [entries, setEntries] = useState<DailyEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +39,7 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { if (isActive !== false) load(); }, [isActive, load]);
 
   useEffect(() => {
     const handleVisibility = () => { if (document.visibilityState === 'visible') load(); };

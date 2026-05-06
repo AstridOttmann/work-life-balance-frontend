@@ -41,8 +41,8 @@ function AppShell() {
       </AppBar>
 
       <Container maxWidth="lg" sx={{ mt: 4, mb: 6 }}>
-        <Box hidden={tab !== 0}><TrackingPage /></Box>
-        <Box hidden={tab !== 1}><DashboardPage /></Box>
+        <Box hidden={tab !== 0}><TrackingPage isActive={tab === 0} /></Box>
+        <Box hidden={tab !== 1}><DashboardPage isActive={tab === 1} /></Box>
         <Box hidden={tab !== 2}><SummaryPage isActive={tab === 2} /></Box>
       </Container>
 

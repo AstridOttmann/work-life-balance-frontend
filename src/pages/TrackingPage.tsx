@@ -70,7 +70,7 @@ function calcTodaySummary(entry: DailyEntry | null) {
   return { work: sum('WORK'), free: sum('FREE') };
 }
 
-export default function TrackingPage() {
+export default function TrackingPage({ isActive }: { isActive?: boolean }) {
   const [work, setWork] = useState<TrackerState>(IDLE);
   const [free, setFree] = useState<TrackerState>(IDLE);
   const [todayEntry, setTodayEntry] = useState<DailyEntry | null>(null);
@@ -99,6 +99,9 @@ export default function TrackingPage() {
       } : IDLE);
     });
   }, []);
+
+  // Refresh summary when tab becomes active
+  useEffect(() => { if (isActive) refreshToday(); }, [isActive, refreshToday]);
 
   // 1-second tick to re-render timer displays while running
   useEffect(() => {
