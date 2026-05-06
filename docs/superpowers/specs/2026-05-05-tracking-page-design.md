@@ -153,7 +153,7 @@ No decorative SVG ring (unnecessary complexity; large timer provides equivalent 
 ---
 
 ## Out of Scope
-- Mobile tracking page (separate future work)
+- Mobile tracking page (separate future work — mobile already has 3 tabs: Daily Log, Summary, Profile)
 - "Project / Activity" label from Stitch design (not in user requirements)
 - Cross-midnight timer recovery (HH:mm startTime is ambiguous after midnight — acceptable for v1)
 - Multiple simultaneous running blocks of the same type (not possible since Start is disabled when running)

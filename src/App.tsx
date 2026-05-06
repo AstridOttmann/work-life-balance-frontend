@@ -6,6 +6,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import DashboardPage from './pages/DashboardPage';
 import SummaryPage from './pages/SummaryPage';
+import TrackingPage from './pages/TrackingPage';
 import { ToastProvider } from './context/ToastContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginDialog from './components/LoginDialog';
@@ -13,7 +14,7 @@ import AccountMenu from './components/AccountMenu';
 
 function AppShell() {
   const { token } = useAuth();
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState(1);
 
   return (
     <>
@@ -33,14 +34,16 @@ function AppShell() {
           centered
           sx={{ bgcolor: 'primary.dark' }}
         >
+          <Tab label="Tracking" />
           <Tab label="Daily Log" />
-          <Tab label="Summary" />
+          <Tab label="Statistics" />
         </Tabs>
       </AppBar>
 
       <Container maxWidth="lg" sx={{ mt: 4, mb: 6 }}>
-        <Box hidden={tab !== 0}><DashboardPage /></Box>
-        <Box hidden={tab !== 1}><SummaryPage isActive={tab === 1} /></Box>
+        <Box hidden={tab !== 0}><TrackingPage isActive={tab === 0} /></Box>
+        <Box hidden={tab !== 1}><DashboardPage isActive={tab === 1} /></Box>
+        <Box hidden={tab !== 2}><SummaryPage isActive={tab === 2} /></Box>
       </Container>
 
       <LoginDialog open={!token} />

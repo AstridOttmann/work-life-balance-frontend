@@ -104,7 +104,7 @@ export default function EntryList({ entries, onEdit, onDelete, onViewAppointment
                 overflow: 'hidden',
               }}
             >
-              {e.notes}
+             Notes: {e.notes}
             </Typography>
           )}
 
