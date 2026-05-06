@@ -186,7 +186,7 @@ export default function TrackingPage({ isActive }: { isActive?: boolean }) {
         await timeBlocksApi.update(tracker.blockId, {
           dailyEntryId: tracker.dailyEntryId, type,
           startTime: tracker.startTime + ':00', paused: false,
-          segmentStartTime: now.format('HH:mm:ss'),
+          elapsedMs: tracker.accumulatedMs, segmentStartTime: now.format('HH:mm:ss'),
         });
         setter(prev => ({ ...prev, status: 'running', startTimestamp: Date.now() }));
       } catch { toast.error('Failed to resume tracker'); }
