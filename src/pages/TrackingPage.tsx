@@ -100,9 +100,6 @@ export default function TrackingPage({ isActive }: { isActive?: boolean }) {
     });
   }, []);
 
-  // Refresh summary when tab becomes active
-  useEffect(() => { if (isActive) refreshToday(); }, [isActive, refreshToday]);
-
   // 1-second tick to re-render timer displays while running
   useEffect(() => {
     if (work.status !== 'running' && free.status !== 'running') return;
@@ -126,6 +123,8 @@ export default function TrackingPage({ isActive }: { isActive?: boolean }) {
     const entries = await entriesApi.getAll(today, today);
     setTodayEntry(entries[0] ?? null);
   }, []);
+
+  useEffect(() => { if (isActive) refreshToday(); }, [isActive, refreshToday]);
 
   const handleStart = useCallback(async (type: 'WORK' | 'FREE') => {
     try {
