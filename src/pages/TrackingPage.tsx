@@ -77,44 +77,45 @@ export default function TrackingPage({ isActive }: { isActive?: boolean }) {
   const [, setTick] = useState(0);
   const { toast } = useToast();
 
-  // Restore any running block from DB on mount
-  useEffect(() => {
+  const syncFromDB = useCallback(async () => {
     const today = dayjs().format('YYYY-MM-DD');
-    entriesApi.getAll(today, today).then(entries => {
-      const entry = entries[0] ?? null;
-      setTodayEntry(entry);
-      const now = Date.now();
-      const running = entry?.timeBlocks.filter(b => b.endTime == null) ?? [];
-      const workBlock = running.find(b => b.type === 'WORK');
-      const freeBlock = running.find(b => b.type === 'FREE');
-      if (workBlock) {
-        const paused = workBlock.paused;
-        const seg = workBlock.segmentStartTime ?? workBlock.startTime;
-        setWork({
-          status: paused ? 'paused' : 'running',
-          blockId: workBlock.id, dailyEntryId: entry!.id,
-          startTime: workBlock.startTime.substring(0, 5),
-          startTimestamp: paused ? null : now,
-          accumulatedMs: paused
-            ? workBlock.elapsedMs
-            : workBlock.elapsedMs + (now - parseTimeAsToday(seg)),
-        });
-      } else setWork(IDLE);
-      if (freeBlock) {
-        const paused = freeBlock.paused;
-        const seg = freeBlock.segmentStartTime ?? freeBlock.startTime;
-        setFree({
-          status: paused ? 'paused' : 'running',
-          blockId: freeBlock.id, dailyEntryId: entry!.id,
-          startTime: freeBlock.startTime.substring(0, 5),
-          startTimestamp: paused ? null : now,
-          accumulatedMs: paused
-            ? freeBlock.elapsedMs
-            : freeBlock.elapsedMs + (now - parseTimeAsToday(seg)),
-        });
-      } else setFree(IDLE);
-    });
+    const entries = await entriesApi.getAll(today, today);
+    const entry = entries[0] ?? null;
+    setTodayEntry(entry);
+    const now = Date.now();
+    const open = entry?.timeBlocks.filter(b => b.endTime == null) ?? [];
+    const workBlock = open.find(b => b.type === 'WORK');
+    const freeBlock = open.find(b => b.type === 'FREE');
+    if (workBlock) {
+      const paused = workBlock.paused;
+      const seg = workBlock.segmentStartTime ?? workBlock.startTime;
+      setWork({
+        status: paused ? 'paused' : 'running',
+        blockId: workBlock.id, dailyEntryId: entry!.id,
+        startTime: workBlock.startTime.substring(0, 5),
+        startTimestamp: paused ? null : now,
+        accumulatedMs: paused
+          ? workBlock.elapsedMs
+          : workBlock.elapsedMs + (now - parseTimeAsToday(seg)),
+      });
+    } else setWork(IDLE);
+    if (freeBlock) {
+      const paused = freeBlock.paused;
+      const seg = freeBlock.segmentStartTime ?? freeBlock.startTime;
+      setFree({
+        status: paused ? 'paused' : 'running',
+        blockId: freeBlock.id, dailyEntryId: entry!.id,
+        startTime: freeBlock.startTime.substring(0, 5),
+        startTimestamp: paused ? null : now,
+        accumulatedMs: paused
+          ? freeBlock.elapsedMs
+          : freeBlock.elapsedMs + (now - parseTimeAsToday(seg)),
+      });
+    } else setFree(IDLE);
   }, []);
+
+  useEffect(() => { syncFromDB(); }, [syncFromDB]);
+  useEffect(() => { if (isActive) syncFromDB(); }, [isActive, syncFromDB]);
 
   // 1-second tick to re-render timer displays while running
   useEffect(() => {
@@ -139,8 +140,6 @@ export default function TrackingPage({ isActive }: { isActive?: boolean }) {
     const entries = await entriesApi.getAll(today, today);
     setTodayEntry(entries[0] ?? null);
   }, []);
-
-  useEffect(() => { if (isActive) refreshToday(); }, [isActive, refreshToday]);
 
   const handleStart = useCallback(async (type: 'WORK' | 'FREE') => {
     try {
