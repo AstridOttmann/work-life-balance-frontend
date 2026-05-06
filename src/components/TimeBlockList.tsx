@@ -92,7 +92,7 @@ export default function TimeBlockList({ dailyEntryId, type, blocks, onChange, la
               >
                 <ListItemText
                   primary={
-                    b.endTime === null ? (
+                    b.endTime == null ? (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <span>{b.startTime.substring(0, 5)}</span>
                         <Chip label="Running" size="small" color="success" />
@@ -101,7 +101,7 @@ export default function TimeBlockList({ dailyEntryId, type, blocks, onChange, la
                       `${b.startTime.substring(0, 5)} – ${b.endTime.substring(0, 5)}`
                     )
                   }
-                  secondary={b.endTime !== null ? blockDuration(b) : null}
+                  secondary={b.endTime != null ? blockDuration(b) : null}
                 />
               </ListItem>
             </Box>

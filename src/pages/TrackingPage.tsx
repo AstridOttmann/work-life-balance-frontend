@@ -58,7 +58,7 @@ function parseTimeAsToday(hhmm: string): number {
 }
 
 function calcTodaySummary(entry: DailyEntry | null) {
-  const blocks = entry?.timeBlocks.filter(b => b.endTime !== null) ?? [];
+  const blocks = entry?.timeBlocks.filter(b => b.endTime != null) ?? [];
   const sum = (type: 'WORK' | 'FREE') =>
     blocks.filter(b => b.type === type).reduce((acc, b) => {
       const [sh, sm] = b.startTime.split(':').map(Number);
@@ -209,11 +209,11 @@ export default function TrackingPage() {
 
       <Paper elevation={1} sx={{ p: 2, display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 2 }}>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="caption" color="text.secondary" display="block">Total Work today</Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ display:'block' }}>Total Work today</Typography>
           <Typography variant="h6" color="primary">{formatHM(summary.work)}</Typography>
         </Box>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="caption" color="text.secondary" display="block">Total Free Time today</Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ display:'block' }}>Total Free Time today</Typography>
           <Typography variant="h6" color="text.secondary">{formatHM(summary.free)}</Typography>
         </Box>
       </Paper>
@@ -242,7 +242,7 @@ function TrackerCard({ type, tracker, otherStatus, onStart, onPause, onStop }: T
     <Paper elevation={2} sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
         {type === 'WORK' ? <WorkIcon color="primary" /> : <SpaIcon color="action" />}
-        <Typography variant="h6" fontWeight={700}>{label}</Typography>
+        <Typography variant="h6" sx={{ fontWeight: 700 }}>{label}</Typography>
         <Box sx={{ ml: 'auto' }}>
           {tracker.status === 'running' && <Chip label="Running" size="small" color="success" />}
           {tracker.status === 'paused'  && <Chip label="Paused"  size="small" color="warning" />}
@@ -261,20 +261,20 @@ function TrackerCard({ type, tracker, otherStatus, onStart, onPause, onStop }: T
         {formatElapsed(elapsed)}
       </Typography>
 
-      <Stack direction="row" spacing={2} justifyContent="center">
+      <Stack direction="row" spacing={2} sx={{ justifyContent: 'center' }}>
         <Box sx={{ textAlign: 'center' }}>
           <Button variant="contained" disabled={startDisabled} onClick={onStart}
             sx={{ minWidth: 56, height: 56, borderRadius: 2 }}>
             <PlayArrowIcon />
           </Button>
-          <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>Start</Typography>
+          <Typography variant="caption" sx={{ display:'block', mt: 0.5 }}>Start</Typography>
         </Box>
         <Box sx={{ textAlign: 'center' }}>
           <Button variant="outlined" disabled={pauseDisabled} onClick={onPause}
             sx={{ minWidth: 56, height: 56, borderRadius: 2 }}>
             <PauseIcon />
           </Button>
-          <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>
+          <Typography variant="caption" sx={{ display:'block', mt: 0.5 }}>
             {tracker.status === 'paused' ? 'Resume' : 'Pause'}
           </Typography>
         </Box>
@@ -283,7 +283,7 @@ function TrackerCard({ type, tracker, otherStatus, onStart, onPause, onStop }: T
             sx={{ minWidth: 56, height: 56, borderRadius: 2 }}>
             <StopIcon />
           </Button>
-          <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>Stop</Typography>
+          <Typography variant="caption" sx={{ display:'block', mt: 0.5 }}>Stop</Typography>
         </Box>
       </Stack>
     </Paper>
